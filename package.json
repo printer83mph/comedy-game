@@ -1,0 +1,14 @@
+{
+  "name": "caption-contest",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "turbo dev",
+    "lint": "turbo lint"
+  },
+  "author": "printer83mph",
+  "license": "ISC",
+  "devDependencies": {
+    "prettier": "^3.0.3"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "backend",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "nodemon ./src/main.ts",
+    "build": "tsc",
+    "start": "node ./dist/main.js",
+    "lint": "eslint . --report-unused-disable-directives",
+    "format": "prettier -w ."
+  },
+  "author": "printer83mph",
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/cors": "^8.4.0",
+    "dotenv": "^16.3.1",
+    "fastify": "^4.24.3"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.45.0",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.28.1",
+    "nodemon": "^3.0.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.2"
+  }
+}
