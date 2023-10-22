@@ -16,8 +16,12 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
 
+    /* Projects */
+    "composite": true,
+
     /* Type Checking */
     "strict": true,
     "skipLibCheck": true
-  }
+  },
+  "include": ["src"]
 }
