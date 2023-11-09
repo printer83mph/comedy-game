@@ -1,20 +1,48 @@
+import { useState } from 'react';
+import Game from './components/game';
+import useLobbySocket from './hooks/use-lobby-socket';
+import { LobbyID } from '../../backend/src/types/server';
+
 function App() {
-  return (
-    <main className="container mx-auto pt-12">
-      <p>Hello!</p>
-      <button
-        type="button"
-        className="bg-blue-500 px-8 py-1 rounded-md text-white"
-        onClick={async () => {
-          const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/`, {
-            method: 'GET',
-          });
-          console.log(await res.json());
-        }}
-      >
-        Ping
-      </button>
-    </main>
+  const { connected, lobby, createLobby, joinLobby } = useLobbySocket();
+  const [joinLobbyId, setJoinLobbyId] = useState('');
+
+  return connected ? (
+    <>
+      {lobby.lobbyId ? (
+        <Game lobbyId={lobby.lobbyId} />
+      ) : (
+        <main className="container mx-auto pt-12">
+          <div>
+            <button
+              type="button"
+              onClick={() => {
+                createLobby('Thomas');
+              }}
+            >
+              Create Lobby
+            </button>
+          </div>
+          <div>
+            <input
+              type="text"
+              value={joinLobbyId}
+              onChange={(evt) => setJoinLobbyId(evt.target.value)}
+            />
+            <button
+              type="button"
+              onClick={() => {
+                joinLobby(joinLobbyId as LobbyID);
+              }}
+            >
+              Join Lobby
+            </button>
+          </div>
+        </main>
+      )}
+    </>
+  ) : (
+    <div>Loading...</div>
   );
 }
 
