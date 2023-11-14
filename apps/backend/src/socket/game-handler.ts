@@ -32,7 +32,7 @@ export default function registerGameHandler(
       } catch (err) {
         /* empty */
         console.error(err);
-        console.log('game:', game);
+        socket.emit('client-error', (err as Error).message);
       }
     }, socket),
   );

@@ -23,7 +23,7 @@ export default function Game({
         <>
           <h1 className="text-3xl font-bold">Welcome to Game</h1>
           <h2 className="mt-8">{lobbyId}</h2>
-          {isOwner && (
+          {isOwner && players.length >= 3 && (
             <button
               onClick={() => {
                 startGame();

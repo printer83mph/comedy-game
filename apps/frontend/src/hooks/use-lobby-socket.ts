@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { toast } from 'react-hot-toast';
 
 import type { LobbyID } from '../../../backend/src/types/server';
 import socket from '../lib/socket';
@@ -27,6 +28,10 @@ export default function useLobbySocket() {
       setLobby((currentLobby) => ({ ...currentLobby, players, ownerId }));
     }
 
+    function onClientError(message: string) {
+      toast.error(message);
+    }
+
     function onDisconnect() {
       setConnected(false);
     }
@@ -34,12 +39,14 @@ export default function useLobbySocket() {
     socket.on('connect', onConnect);
     socket.on('lobby:join', onJoin);
     socket.on('lobby:update-players', onUpdatePlayers);
+    socket.on('client-error', onClientError);
     socket.on('disconnect', onDisconnect);
 
     return () => {
       socket.off('connect', onConnect);
       socket.off('lobby:join', onJoin);
       socket.off('lobby:update-players', onUpdatePlayers);
+      socket.off('client-error', onClientError);
       socket.off('disconnect', onDisconnect);
     };
   }, [lobby.lobbyId]);

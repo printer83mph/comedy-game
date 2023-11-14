@@ -90,6 +90,7 @@ export default function registerLobbyHandler(
 
     try {
       lobby.removePlayer(socket.id);
+      updatePlayers(io, socket.data.lobbyId);
     } catch (err) {
       console.error(
         'Something went wrong removing a disconnecting player from a game',
