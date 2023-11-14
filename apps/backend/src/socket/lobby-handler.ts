@@ -5,6 +5,19 @@ import { GameServer, GameSocket, LobbyID } from '../types/server';
 
 const lobbies = new Map<LobbyID, Game>();
 
+export function getLobby(lobbyId: LobbyID) {
+  return lobbies.get(lobbyId);
+}
+
+function updatePlayers(io: GameServer, lobbyId: LobbyID) {
+  const lobby = lobbies.get(lobbyId)!;
+  io.to(lobbyId).emit(
+    'lobby:update-players',
+    lobby.PlayerIds.map((id) => [id, 'FIX ME!!']),
+    lobby.OwnerId,
+  );
+}
+
 export default function registerLobbyHandler(
   io: GameServer,
   socket: GameSocket,
@@ -33,6 +46,7 @@ export default function registerLobbyHandler(
       socket.join(lobbyId);
       socket.data.lobbyId = lobbyId;
       socket.emit('lobby:join', lobbyId, socket.id);
+      updatePlayers(io, lobbyId);
       console.log('lobby created!');
     } catch (err) {
       console.error(err);
@@ -58,9 +72,11 @@ export default function registerLobbyHandler(
     }
 
     try {
+      lobby.addPlayer(socket.id, socket.data.displayName || 'FIX ME');
       socket.join(lobbyId);
       socket.data.lobbyId = lobbyId;
       socket.emit('lobby:join', lobbyId, lobby.OwnerId);
+      updatePlayers(io, lobbyId);
     } catch (err) {
       socket.emit('client-error', (err as Error).message);
     }

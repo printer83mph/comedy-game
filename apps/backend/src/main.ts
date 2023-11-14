@@ -6,6 +6,8 @@ import Fastify from 'fastify';
 import fastifySocketIO from 'fastify-socket.io';
 
 import registerLobbyHandler from './socket/lobby-handler';
+import { GameServer } from './types/server';
+import registerGameHandler from './socket/game-handler';
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
@@ -30,12 +32,10 @@ fastify.get('/', () => {
 
 console.log('le troll!');
 fastify.ready().then(() => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  fastify.io.on('connection', (socket) => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    registerLobbyHandler(fastify.io, socket);
+  const io = (fastify as unknown as { io: GameServer }).io;
+  io.on('connection', (socket) => {
+    registerLobbyHandler(io, socket);
+    registerGameHandler(io, socket);
   });
 });
 

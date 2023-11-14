@@ -1,7 +1,9 @@
 import { useState } from 'react';
+
+import { LobbyID } from '../../backend/src/types/server';
+
 import Game from './components/game';
 import useLobbySocket from './hooks/use-lobby-socket';
-import { LobbyID } from '../../backend/src/types/server';
 
 function App() {
   const { connected, lobby, createLobby, joinLobby } = useLobbySocket();
@@ -10,7 +12,7 @@ function App() {
   return connected ? (
     <>
       {lobby.lobbyId ? (
-        <Game lobbyId={lobby.lobbyId} />
+        <Game {...lobby} />
       ) : (
         <main className="container mx-auto pt-12">
           <div>

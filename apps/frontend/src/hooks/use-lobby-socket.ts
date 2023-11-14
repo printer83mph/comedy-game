@@ -6,7 +6,8 @@ import socket from '../lib/socket';
 export default function useLobbySocket() {
   const [connected, setConnected] = useState(socket.connected);
   const [lobby, setLobby] = useState<
-    { lobbyId: null } | { lobbyId: LobbyID; players: [string, string][] }
+    | { lobbyId: null }
+    | { lobbyId: LobbyID; players: [string, string][]; ownerId: string }
   >({
     lobbyId: null,
   });
@@ -18,12 +19,12 @@ export default function useLobbySocket() {
 
     function onJoin(lobbyId: LobbyID) {
       console.log('joined lobby!', lobbyId);
-      setLobby({ lobbyId, players: [] });
+      setLobby({ lobbyId, players: [], ownerId: '' });
     }
 
-    function onUpdatePlayers(players: [string, string][]) {
+    function onUpdatePlayers(players: [string, string][], ownerId: string) {
       if (lobby.lobbyId === null) return;
-      setLobby((currentLobby) => ({ ...currentLobby, players }));
+      setLobby((currentLobby) => ({ ...currentLobby, players, ownerId }));
     }
 
     function onDisconnect() {

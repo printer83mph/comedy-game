@@ -105,6 +105,7 @@ export default class Game {
     this.io.in(this.lobbyId).emit('game:set-state', {
       state: 'writing',
       imgUrl: this.gameState.imageUrl,
+      endTime: Date.now() + ROUND_TIME * 1000,
     });
 
     if (this.gameState.roundIndex + 1 >= ROUND_COUNT) {
