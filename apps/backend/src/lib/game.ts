@@ -14,6 +14,7 @@ type GameState =
       imageUrl: string;
       roundIndex: number;
       submissions: Map<string, string>;
+      votes: Map<string, string>;
     }
   | { phase: 'finished'; scores: Map<string, number> };
 
@@ -81,13 +82,13 @@ export default class Game {
       throw new Error('Too many players');
     }
 
-    this.doWriting();
+    this.startWriting();
   }
 
-  private doWriting() {
+  private startWriting() {
     if (this.gameState.phase === 'playing') {
       // continuing
-      this.gameState.roundIndex++;
+      this.gameState.roundIndex += 1;
       this.gameState.submissions = new Map();
       this.gameState.step = 'writing';
     } else {
@@ -95,34 +96,92 @@ export default class Game {
       this.gameState = {
         phase: 'playing',
         step: 'writing',
+        // TODO: pick random image
         imageUrl: 'https://placekitten.com/300/400',
-        roundIndex: -1,
+        roundIndex: 0,
         scores: new Map(),
         submissions: new Map(),
+        votes: new Map(),
       };
     }
 
     this.io.in(this.lobbyId).emit('game:set-state', {
+      roundIndex: this.gameState.roundIndex,
       state: 'writing',
       imgUrl: this.gameState.imageUrl,
       endTime: Date.now() + ROUND_TIME * 1000,
     });
 
-    if (this.gameState.roundIndex + 1 >= ROUND_COUNT) {
-      this.endGame(this.gameState.scores);
-    } else {
-      this.timeout = setTimeout(this.doJudging, ROUND_TIME * 1000);
-    }
+    this.timeout = setTimeout(this.startJudging.bind(this), ROUND_TIME * 1000);
   }
 
-  private doJudging() {
+  public submitCaption(playerId: string, caption: string) {
     if (
       this.gameState.phase !== 'playing' ||
       this.gameState.step !== 'writing'
     ) {
-      throw new Error('Attempted to start judging phas');
+      throw new Error('Attempted to submit caption on wrong phase');
     }
-    // TODO
+
+    if (this.gameState.submissions.has(playerId)) {
+      throw new Error('Player has already submitted a caption');
+    }
+
+    // TODO: validation on caption
+    this.gameState.submissions.set(playerId, caption);
+  }
+
+  private startJudging() {
+    if (
+      this.gameState.phase !== 'playing' ||
+      this.gameState.step !== 'writing'
+    ) {
+      throw new Error('Attempted to start judging phase');
+    }
+
+    const { roundIndex, imageUrl, submissions } = this.gameState;
+
+    this.gameState = {
+      phase: 'playing',
+      step: 'judging',
+      roundIndex,
+      imageUrl,
+      submissions,
+      votes: new Map(),
+      scores: new Map(),
+    };
+
+    if (this.gameState.roundIndex + 1 >= ROUND_COUNT) {
+      this.endGame(this.gameState.scores);
+    } else {
+      this.timeout = setTimeout(
+        this.startWriting.bind(this),
+        ROUND_TIME * 1000,
+      );
+    }
+  }
+
+  public submitVote(votingPlayerId: string, submissionPlayerId: string) {
+    if (
+      this.gameState.phase !== 'playing' ||
+      this.gameState.step !== 'judging'
+    ) {
+      throw new Error('Attempted to submit caption on wrong phase');
+    }
+
+    if (this.gameState.votes.has(votingPlayerId)) {
+      throw new Error('Player has already voted');
+    }
+
+    if (votingPlayerId === submissionPlayerId) {
+      throw new Error('Player cannot vote for themselves');
+    }
+
+    this.gameState.votes.set(votingPlayerId, submissionPlayerId);
+    this.gameState.scores.set(
+      submissionPlayerId,
+      (this.gameState.scores.get(submissionPlayerId) ?? 0) + 1,
+    );
   }
 
   private endGame(scores: Map<string, number>) {

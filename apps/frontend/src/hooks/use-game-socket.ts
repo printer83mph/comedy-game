@@ -33,5 +33,9 @@ export default function useGameSocket(/* {
     socket.emit('game:submit-caption', caption);
   }
 
-  return { gameState, startGame, submitCaption };
+  function submitVote(submissionPlayerId: string) {
+    socket.emit('game:submit-vote', submissionPlayerId);
+  }
+
+  return { gameState, startGame, submitCaption, submitVote };
 }

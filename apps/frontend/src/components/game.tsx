@@ -11,34 +11,41 @@ export default function Game({
   players: [string, string][];
   ownerId: string;
 }) {
-  const { gameState, startGame, submitCaption } =
+  const { gameState, startGame, submitCaption, submitVote } =
     useGameSocket(/* { players } */);
 
   const isOwner = ownerId === socket.id;
+  const canStartGame = players.length >= 3;
   const isWriting = gameState?.state === 'writing';
 
   return (
-    <main className="w-full h-screen bg-blue-200 flex items-center justify-center flex-col">
+    <main className="w-full h-screen">
       {gameState === null && (
         <>
           <h1 className="text-3xl font-bold">Welcome to Game</h1>
+          <div>
+            Players:{' '}
+            <ul className="flex gap-3">
+              {players.map(([, displayName]) => (
+                <li>{displayName}</li>
+              ))}
+            </ul>
+          </div>
           <h2 className="mt-8">{lobbyId}</h2>
-          {isOwner && players.length >= 3 && (
+          {isOwner && (
             <button
+              disabled={!canStartGame}
               onClick={() => {
                 startGame();
               }}
             >
-              Start Game
+              {canStartGame ? 'Start Game' : 'Waiting for Players'}
             </button>
           )}
         </>
       )}
       {gameState !== null && (
-        <>
-          <div>Players: {players.map(([, displayName]) => displayName)}</div>
-          {isWriting && <h1>Do your writing baby!!</h1>}
-        </>
+        <>{isWriting && <h1>Do your writing baby!!</h1>}</>
       )}
     </main>
   );

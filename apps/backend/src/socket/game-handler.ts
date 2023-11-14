@@ -30,7 +30,30 @@ export default function registerGameHandler(
         console.log('Starting game!');
         game.play();
       } catch (err) {
-        /* empty */
+        console.error(err);
+        socket.emit('client-error', (err as Error).message);
+      }
+    }, socket),
+  );
+
+  socket.on(
+    'game:submit-caption',
+    withLobby((game, caption) => {
+      try {
+        game.submitCaption(socket.id, caption);
+      } catch (err) {
+        console.error(err);
+        socket.emit('client-error', (err as Error).message);
+      }
+    }, socket),
+  );
+
+  socket.on(
+    'game:submit-vote',
+    withLobby((game, submissionPlayerId) => {
+      try {
+        game.submitVote(socket.id, submissionPlayerId);
+      } catch (err) {
         console.error(err);
         socket.emit('client-error', (err as Error).message);
       }

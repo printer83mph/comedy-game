@@ -2,14 +2,17 @@ import type { Server, Socket } from 'socket.io';
 
 export type LobbyID = `lobby-${string}`;
 
-export type NewGameState =
-  | { state: 'writing'; imgUrl: string; endTime: number }
+export type NewGameState = {
+  roundIndex: number;
+  imgUrl: string;
+  endTime: number;
+} & (
+  | { state: 'writing' }
   | {
       state: 'judging';
-      imgUrl: string;
       captions: { id: string; content: string };
-      endTime: number;
-    };
+    }
+);
 
 export interface ServerToClientEvents {
   'client-error': (error: string) => void;
@@ -27,6 +30,7 @@ export interface ClientToServerEvents {
   'lobby:join': (lobbyId: LobbyID) => void;
   'game:start': () => void;
   'game:submit-caption': (caption: string) => void;
+  'game:submit-vote': (submissionPlayerId: string) => void;
 }
 
 export interface InterServerEvents {}
