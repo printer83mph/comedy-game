@@ -1,6 +1,6 @@
+import { NewGameState } from 'backend/src/types/server';
 import { useEffect, useState } from 'react';
 
-import { NewGameState } from '../../../backend/src/types/server';
 import socket from '../lib/socket';
 
 export default function useGameSocket(/* {

@@ -1,7 +1,7 @@
+import { NewGameState } from 'backend/src/types/server';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 
-import { NewGameState } from '../../../backend/src/types/server';
 import socket from '../lib/socket';
 
 import Timer from './timer';
@@ -19,7 +19,7 @@ export default function JudgingStep({
   if (gameState.state === 'writing') return null;
   return (
     <>
-      <img src="/vote.svg" className="w-full lg:h-[100px] lg:w-auto" />
+      <img src="/img/vote.svg" className="w-full lg:h-[100px] lg:w-auto" />
       {voted ? (
         <div className="flex h-[540px] flex-col items-center justify-center text-white animate-pulse text-3xl">
           Waiting for other players...

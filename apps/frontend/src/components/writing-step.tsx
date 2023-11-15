@@ -1,7 +1,6 @@
+import { NewGameState } from 'backend/src/types/server';
 import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-
-import { NewGameState } from '../../../backend/src/types/server';
 
 import Timer from './timer';
 
@@ -26,7 +25,10 @@ export default function WritingStep({
 
   return (
     <>
-      <img src="/caption_this.svg" className="w-full lg:h-[100px] lg:w-auto" />
+      <img
+        src="/img/caption_this.svg"
+        className="w-full lg:h-[100px] lg:w-auto"
+      />
       {hasSubmitted ? (
         <div className="flex h-[540px] flex-col items-center justify-center text-white animate-pulse text-3xl">
           Waiting for other players...

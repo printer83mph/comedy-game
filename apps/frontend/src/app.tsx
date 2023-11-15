@@ -21,7 +21,7 @@ function App() {
     <>
       <div
         className="fixed inset-0 bg-cover bg-center"
-        style={{ backgroundImage: 'url("/background.svg")' }}
+        style={{ backgroundImage: 'url("/img/background.svg")' }}
       />
       <div className="relative text-xl">
         {lobby.lobbyId ? (
@@ -33,7 +33,7 @@ function App() {
           />
         ) : (
           <main className="container mx-auto px-6 py-4">
-            <img src="/logo.svg" className="h-72 xl:absolute" />
+            <img src="/img/logo.svg" className="h-72 xl:absolute" />
             <div className="flex items-center justify-center max-xl:mt-12 flex-col xl:h-screen max-h-[960px]">
               {hasName ? (
                 <>

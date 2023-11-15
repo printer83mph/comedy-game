@@ -1,6 +1,5 @@
+import { NewGameState } from 'backend/src/types/server';
 import { useEffect, useState } from 'react';
-
-import { NewGameState } from '../../../backend/src/types/server';
 
 import Timer from './timer';
 
@@ -34,7 +33,9 @@ export default function LookingStep({
     <div>
       <img
         src={
-          page === 'captions' ? '/answers_are_in.svg' : '/and_the_winner_is.svg'
+          page === 'captions'
+            ? '/img/answers_are_in.svg'
+            : '/img/and_the_winner_is.svg'
         }
         className="w-full lg:h-[100px] lg:w-auto"
       />

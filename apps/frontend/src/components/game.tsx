@@ -35,7 +35,7 @@ export default function Game({
       {gameState.phase === 'waiting' && (
         <>
           <img
-            src="/waiting_for_players.svg"
+            src="/img/waiting_for_players.svg"
             className="w-full lg:h-[100px] lg:w-auto"
           />
           <ul className="fixed left-0 bg-gradient-to-t from-theme-darkblue via-theme-darkblue/80 to-theme-darkblue/0 pt-6 right-0 bottom-0 flex flex-row justify-center gap-6 mx-6 max-h-[50vh]">
@@ -44,7 +44,7 @@ export default function Game({
                 <div className="text-center text-xl text-white">
                   {displayName}
                 </div>
-                <img src="/player_indicator.svg" className="w-full mt-3" />
+                <img src="/img/player_indicator.svg" className="w-full mt-3" />
               </li>
             ))}
           </ul>
@@ -107,7 +107,10 @@ export default function Game({
       )}
       {gameState.phase === 'finished' && (
         <>
-          <img src="/results.svg" className="w-full lg:h-[100px] lg:w-auto" />
+          <img
+            src="/img/results.svg"
+            className="w-full lg:h-[100px] lg:w-auto"
+          />
           <h2 className="mt-8 text-white/80 text-3xl select-none text-center">
             Lobby Pin: <span className="select-text text-white">{lobbyId}</span>
           </h2>
@@ -151,7 +154,10 @@ export default function Game({
                   <div className="text-center text-xl text-white">
                     {playerName} – {score}
                   </div>
-                  <img src="/player_indicator.svg" className="w-full mt-3" />
+                  <img
+                    src="/img/player_indicator.svg"
+                    className="w-full mt-3"
+                  />
                 </li>
               );
             })}

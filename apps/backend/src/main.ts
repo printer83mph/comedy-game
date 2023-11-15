@@ -26,10 +26,6 @@ fastify.register(fastifySocketIO, {
   cors: { origin: FRONTEND_URL },
 });
 
-fastify.get('/', () => {
-  return { hello: 'world' };
-});
-
 console.log('le troll!');
 fastify.ready().then(() => {
   const io = (fastify as unknown as { io: GameServer }).io;
