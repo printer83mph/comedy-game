@@ -29,10 +29,16 @@ importers:
       fastify-socket.io:
         specifier: ^5.0.0
         version: 5.0.0(fastify@4.24.3)
+      randomstring:
+        specifier: ^1.3.0
+        version: 1.3.0
       socket.io:
         specifier: ^4.7.2
         version: 4.7.2
     devDependencies:
+      '@types/randomstring':
+        specifier: ^1.1.11
+        version: 1.1.11
       '@typescript-eslint/eslint-plugin':
         specifier: ^6.0.0
         version: 6.8.0(@typescript-eslint/parser@6.8.0)(eslint@8.52.0)(typescript@5.2.2)
@@ -658,6 +664,10 @@ packages:
 
   /@types/prop-types@15.7.9:
     resolution: {integrity: sha512-n1yyPsugYNSmHgxDFjicaI2+gCNjsBck8UX9kuofAKlc0h1bL+20oSF72KeNaW2DUlesbEVCFgyV2dPGTiY42g==}
+    dev: true
+
+  /@types/randomstring@1.1.11:
+    resolution: {integrity: sha512-j3y9mKzGyYN5PHWjRv8Ah/ieZlApRbfSb0rBWVrW9Z+z5N1xjZpbBxgVKbO7WAGfnMpvLG2Gg8gRPxo+f0JWmg==}
     dev: true
 
   /@types/react-dom@18.2.14:
@@ -2686,6 +2696,17 @@ packages:
 
   /quick-format-unescaped@4.0.4:
     resolution: {integrity: sha512-tYC1Q1hgyRuHgloV/YXs2w15unPVh8qfu/qCTfhTYamaw7fyhumKa2yGpdSo87vY32rIclj+4fWYQXUMs9EHvg==}
+    dev: false
+
+  /randombytes@2.0.3:
+    resolution: {integrity: sha512-lDVjxQQFoCG1jcrP06LNo2lbWp4QTShEXnhActFBwYuHprllQV6VUpwreApsYqCgD+N1mHoqJ/BI/4eV4R2GYg==}
+    dev: false
+
+  /randomstring@1.3.0:
+    resolution: {integrity: sha512-gY7aQ4i1BgwZ8I1Op4YseITAyiDiajeZOPQUbIq9TPGPhUm5FX59izIaOpmKbME1nmnEiABf28d9K2VSii6BBg==}
+    hasBin: true
+    dependencies:
+      randombytes: 2.0.3
     dev: false
 
   /react-dom@18.2.0(react@18.2.0):

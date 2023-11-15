@@ -1,7 +1,5 @@
 import type { Server, Socket } from 'socket.io';
 
-export type LobbyID = `lobby-${string}`;
-
 export type NewGameState = {
   roundIndex: number;
   imgUrl: string;
@@ -10,13 +8,18 @@ export type NewGameState = {
   | { state: 'writing' }
   | {
       state: 'judging';
-      captions: { id: string; content: string };
+      captions: [string, string][];
+    }
+  | {
+      state: 'looking';
+      captions: [string, string][];
+      winners: string[];
     }
 );
 
 export interface ServerToClientEvents {
   'client-error': (error: string) => void;
-  'lobby:join': (lobbyId: LobbyID, ownerId: string) => void;
+  'lobby:join': (lobbyId: string, ownerId: string) => void;
   'lobby:update-players': (
     players: [string, string][],
     ownerId: string,
@@ -27,7 +30,7 @@ export interface ServerToClientEvents {
 
 export interface ClientToServerEvents {
   'lobby:create': () => void;
-  'lobby:join': (lobbyId: LobbyID) => void;
+  'lobby:join': (lobbyId: string) => void;
   'game:start': () => void;
   'game:submit-caption': (caption: string) => void;
   'game:submit-vote': (submissionPlayerId: string) => void;
@@ -37,7 +40,7 @@ export interface InterServerEvents {}
 
 export interface SocketData {
   displayName?: string;
-  lobbyId?: LobbyID;
+  lobbyId?: string;
 }
 
 export type GameServer = Server<

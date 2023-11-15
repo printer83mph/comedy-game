@@ -1,15 +1,20 @@
-import { GameServer, LobbyID } from '../types/server';
+import { GameServer } from '../types/server';
 
 const MIN_PLAYERS = 3;
-const MAX_PLAYERS = 8;
-const ROUND_COUNT = 5;
-const ROUND_TIME = 30;
+const MAX_PLAYERS = 6;
+const ROUND_COUNT = 3;
+const WRITING_TIME = 60;
+const JUDGING_TIME = 25;
+const LOOKING_TIME_PER_CAPTION = 5;
+const LOOKING_TIME_WINNER = 10;
+
+const CAPTION_MAX_CHARS = 250;
 
 type GameState =
   | { phase: 'waiting' }
   | {
       phase: 'playing';
-      step: 'writing' | 'judging';
+      step: 'writing' | 'judging' | 'looking';
       scores: Map<string, number>;
       imageUrl: string;
       roundIndex: number;
@@ -32,9 +37,13 @@ export default class Game {
     return [...this.playerData.keys()];
   }
 
+  public get Players() {
+    return [...this.playerData.entries()];
+  }
+
   constructor(
     private io: GameServer,
-    private lobbyId: LobbyID,
+    private lobbyId: string,
     ownerId: string,
     ownerNickname: string,
     private deleteMe: () => void,
@@ -87,6 +96,12 @@ export default class Game {
 
   private startWriting() {
     if (this.gameState.phase === 'playing') {
+      // check for on final round
+      if (this.gameState.roundIndex >= ROUND_COUNT) {
+        console.log('ended game!!!');
+        this.endGame(this.gameState.scores);
+        return;
+      }
       // continuing
       this.gameState.roundIndex += 1;
       this.gameState.submissions = new Map();
@@ -109,10 +124,13 @@ export default class Game {
       roundIndex: this.gameState.roundIndex,
       state: 'writing',
       imgUrl: this.gameState.imageUrl,
-      endTime: Date.now() + ROUND_TIME * 1000,
+      endTime: Date.now() + WRITING_TIME * 1000,
     });
 
-    this.timeout = setTimeout(this.startJudging.bind(this), ROUND_TIME * 1000);
+    this.timeout = setTimeout(
+      this.startJudging.bind(this),
+      WRITING_TIME * 1000,
+    );
   }
 
   public submitCaption(playerId: string, caption: string) {
@@ -127,8 +145,19 @@ export default class Game {
       throw new Error('Player has already submitted a caption');
     }
 
+    if (caption.length > CAPTION_MAX_CHARS) {
+      throw new Error(
+        `Caption must be at most ${CAPTION_MAX_CHARS} characters`,
+      );
+    }
+
     // TODO: validation on caption
     this.gameState.submissions.set(playerId, caption);
+
+    if (this.gameState.submissions.size >= this.playerData.size) {
+      clearTimeout(this.timeout);
+      this.startJudging();
+    }
   }
 
   private startJudging() {
@@ -136,7 +165,7 @@ export default class Game {
       this.gameState.phase !== 'playing' ||
       this.gameState.step !== 'writing'
     ) {
-      throw new Error('Attempted to start judging phase');
+      throw new Error('Attempted to start judging phase at wrong time');
     }
 
     const { roundIndex, imageUrl, submissions } = this.gameState;
@@ -151,14 +180,18 @@ export default class Game {
       scores: new Map(),
     };
 
-    if (this.gameState.roundIndex + 1 >= ROUND_COUNT) {
-      this.endGame(this.gameState.scores);
-    } else {
-      this.timeout = setTimeout(
-        this.startWriting.bind(this),
-        ROUND_TIME * 1000,
-      );
-    }
+    this.io.in(this.lobbyId).emit('game:set-state', {
+      roundIndex: this.gameState.roundIndex,
+      state: 'judging',
+      imgUrl: this.gameState.imageUrl,
+      endTime: Date.now() + JUDGING_TIME * 1000,
+      captions: [...this.gameState.submissions.entries()],
+    });
+
+    this.timeout = setTimeout(
+      this.startLooking.bind(this),
+      JUDGING_TIME * 1000,
+    );
   }
 
   public submitVote(votingPlayerId: string, submissionPlayerId: string) {
@@ -182,6 +215,58 @@ export default class Game {
       submissionPlayerId,
       (this.gameState.scores.get(submissionPlayerId) ?? 0) + 1,
     );
+
+    if (this.gameState.votes.size >= this.playerData.size) {
+      clearTimeout(this.timeout);
+      this.startLooking();
+    }
+  }
+
+  private startLooking() {
+    if (
+      this.gameState.phase !== 'playing' ||
+      this.gameState.step !== 'judging'
+    ) {
+      throw new Error('Attempted to start looking phase at wrong time');
+    }
+
+    const { imageUrl, submissions, votes, roundIndex, scores } = this.gameState;
+
+    let maxPoints = 0;
+    const points = new Map<string, number>();
+    for (const [, submissionPlayerId] of votes.entries()) {
+      const playerPointTally = (points.get(submissionPlayerId) ?? 0) + 1;
+      maxPoints = Math.max(maxPoints, playerPointTally);
+      points.set(submissionPlayerId, playerPointTally);
+    }
+    const winners = [...points.entries()]
+      .filter(([, voteCount]) => voteCount === maxPoints)
+      .map(([id]) => id);
+
+    this.gameState = {
+      phase: 'playing',
+      step: 'writing',
+      imageUrl,
+      submissions,
+      votes,
+      roundIndex,
+      scores,
+    };
+
+    const waitTime =
+      LOOKING_TIME_PER_CAPTION * this.gameState.submissions.size +
+      LOOKING_TIME_WINNER;
+
+    this.io.in(this.lobbyId).emit('game:set-state', {
+      roundIndex: this.gameState.roundIndex,
+      state: 'looking',
+      imgUrl: this.gameState.imageUrl,
+      endTime: Date.now() + waitTime * 1000,
+      captions: [...this.gameState.submissions.entries()],
+      winners,
+    });
+
+    this.timeout = setTimeout(this.startWriting.bind(this), waitTime * 1000);
   }
 
   private endGame(scores: Map<string, number>) {

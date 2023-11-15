@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
-import type { LobbyID } from '../../../backend/src/types/server';
 import socket from '../lib/socket';
 
 export default function useLobbySocket() {
   const [connected, setConnected] = useState(socket.connected);
   const [lobby, setLobby] = useState<
     | { lobbyId: null }
-    | { lobbyId: LobbyID; players: [string, string][]; ownerId: string }
+    | { lobbyId: string; players: [string, string][]; ownerId: string }
   >({
     lobbyId: null,
   });
@@ -18,7 +17,7 @@ export default function useLobbySocket() {
       setConnected(true);
     }
 
-    function onJoin(lobbyId: LobbyID) {
+    function onJoin(lobbyId: string) {
       console.log('joined lobby!', lobbyId);
       setLobby({ lobbyId, players: [], ownerId: '' });
     }
@@ -63,7 +62,7 @@ export default function useLobbySocket() {
     socket.emitWithAck('lobby:create', nickname);
   }
 
-  async function joinLobby(lobbyId: LobbyID) {
+  async function joinLobby(lobbyId: string) {
     if (!connected) {
       return { error: 'Not connected' };
     }
