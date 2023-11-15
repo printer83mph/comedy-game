@@ -1,20 +1,77 @@
+import { useState } from 'react';
+
+import DisplayNameInput from './components/display-name-input';
+import Game from './components/game';
+import JoinLobbyForm from './components/join-lobby-form';
+import useLobbySocket from './hooks/use-lobby-socket';
+
 function App() {
-  return (
-    <main className="container mx-auto pt-12">
-      <p>Hello!</p>
-      <button
-        type="button"
-        className="bg-blue-500 px-8 py-1 rounded-md text-white"
-        onClick={async () => {
-          const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/`, {
-            method: 'GET',
-          });
-          console.log(await res.json());
-        }}
-      >
-        Ping
-      </button>
-    </main>
+  const {
+    connected,
+    lobby,
+    createLobby,
+    joinLobby,
+    leaveLobby,
+    setDisplayName,
+  } = useLobbySocket();
+
+  const [hasName, setHasName] = useState(false);
+
+  return connected ? (
+    <>
+      <div
+        className="fixed inset-0 bg-cover bg-center"
+        style={{ backgroundImage: 'url("/background.svg")' }}
+      />
+      <div className="relative text-xl">
+        {lobby.lobbyId ? (
+          <Game
+            {...lobby}
+            leaveLobby={() => {
+              leaveLobby();
+            }}
+          />
+        ) : (
+          <main className="container mx-auto px-6 py-4">
+            <img src="/logo.svg" className="h-72 xl:absolute" />
+            <div className="flex items-center justify-center max-xl:mt-12 flex-col xl:h-screen max-h-[960px]">
+              {hasName ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      createLobby('Thomas');
+                    }}
+                    className="bg-yellow-100 hover:bg-yellow-100/90 px-6 py-3 text-xl rounded-2xl transition-colors"
+                  >
+                    Create Lobby
+                  </button>
+                  <div className="mt-4 text-white/75">or</div>
+                  <div className="mt-4">
+                    <JoinLobbyForm
+                      onSubmit={({ lobbyId }) => {
+                        joinLobby(lobbyId as string);
+                      }}
+                    />
+                  </div>
+                </>
+              ) : (
+                <DisplayNameInput
+                  onSubmit={({ displayName }) => {
+                    setDisplayName(displayName);
+                    setHasName(true);
+                  }}
+                />
+              )}
+            </div>
+          </main>
+        )}
+      </div>
+    </>
+  ) : (
+    <div className=" h-screen flex items-center justify-center text-white text-xl animate-pulse">
+      Loading...
+    </div>
   );
 }
 
