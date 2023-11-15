@@ -3,7 +3,7 @@ import { GameServer } from '../types/server';
 const MIN_PLAYERS = 3;
 const MAX_PLAYERS = 6;
 
-const ROUND_COUNT = 1;
+const ROUND_COUNT = 3;
 
 const WRITING_TIME = 60;
 const JUDGING_TIME = 25;
