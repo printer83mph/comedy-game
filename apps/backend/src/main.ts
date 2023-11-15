@@ -38,7 +38,7 @@ fastify.ready().then(() => {
 async function start() {
   try {
     fastify.log.info('listening!');
-    await fastify.listen({ port: PORT });
+    await fastify.listen({ port: PORT, host: '0.0.0.0' });
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);
