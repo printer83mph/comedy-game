@@ -5,6 +5,10 @@
       "outputs": ["dist/**", "tsconfig.tsbuildinfo"],
       "dependsOn": ["^build"]
     },
+    "start": {
+      "cache": false,
+      "dependsOn": ["build"]
+    },
     "lint": { "cache": false },
     "dev": { "cache": false, "persistent": true }
   }

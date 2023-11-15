@@ -9,6 +9,10 @@
     "lint": "eslint . --report-unused-disable-directives",
     "format": "prettier -w ."
   },
+  "files": [
+    "dist/",
+    "package.json"
+  ],
   "author": "printer83mph",
   "license": "ISC",
   "dependencies": {
