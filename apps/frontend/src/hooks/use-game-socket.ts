@@ -8,20 +8,31 @@ export default function useGameSocket(/* {
 }: {
   players: [string, string][];
 } */) {
-  const [gameState, setGameState] = useState<NewGameState | null>(null);
+  const [gameState, setGameState] = useState<
+    | { phase: 'playing'; state: NewGameState }
+    | { phase: 'waiting' }
+    | { phase: 'finished'; scores: [string, number][] }
+  >({ phase: 'waiting' });
 
   useEffect(() => {
     function onConnect() {}
+
     function onSetState(newState: NewGameState) {
-      setGameState(newState);
+      setGameState({ phase: 'playing', state: newState });
+    }
+
+    function onFinish(scores: [string, number][]) {
+      setGameState({ phase: 'finished', scores });
     }
 
     socket.on('connect', onConnect);
     socket.on('game:set-state', onSetState);
+    socket.on('game:finish', onFinish);
 
     return () => {
       socket.off('connect', onConnect);
       socket.off('game:set-state', onSetState);
+      socket.off('game:finish', onFinish);
     };
   });
 

@@ -2,10 +2,12 @@ import { GameServer } from '../types/server';
 
 const MIN_PLAYERS = 3;
 const MAX_PLAYERS = 6;
-const ROUND_COUNT = 3;
+
+const ROUND_COUNT = 1;
+
 const WRITING_TIME = 60;
 const JUDGING_TIME = 25;
-const LOOKING_TIME_PER_CAPTION = 5;
+const LOOKING_TIME_PER_CAPTION = 3;
 const LOOKING_TIME_WINNER = 10;
 
 const CAPTION_MAX_CHARS = 250;
@@ -81,8 +83,11 @@ export default class Game {
   }
 
   public play() {
-    if (this.gameState.phase !== 'waiting') {
-      throw new Error('Game not in waiting room phase');
+    if (
+      this.gameState.phase !== 'waiting' &&
+      this.gameState.phase !== 'finished'
+    ) {
+      throw new Error('Game not in waiting room or finished phase');
     }
     if (this.playerData.size < MIN_PLAYERS) {
       throw new Error('Not enough players');
@@ -97,7 +102,7 @@ export default class Game {
   private startWriting() {
     if (this.gameState.phase === 'playing') {
       // check for on final round
-      if (this.gameState.roundIndex >= ROUND_COUNT) {
+      if (this.gameState.roundIndex + 1 >= ROUND_COUNT) {
         console.log('ended game!!!');
         this.endGame(this.gameState.scores);
         return;
@@ -211,10 +216,6 @@ export default class Game {
     }
 
     this.gameState.votes.set(votingPlayerId, submissionPlayerId);
-    this.gameState.scores.set(
-      submissionPlayerId,
-      (this.gameState.scores.get(submissionPlayerId) ?? 0) + 1,
-    );
 
     if (this.gameState.votes.size >= this.playerData.size) {
       clearTimeout(this.timeout);
@@ -242,6 +243,10 @@ export default class Game {
     const winners = [...points.entries()]
       .filter(([, voteCount]) => voteCount === maxPoints)
       .map(([id]) => id);
+
+    winners.forEach((winnerId) => {
+      scores.set(winnerId, (scores.get(winnerId) ?? 0) + 1);
+    });
 
     this.gameState = {
       phase: 'playing',
@@ -271,7 +276,7 @@ export default class Game {
 
   private endGame(scores: Map<string, number>) {
     this.gameState = { phase: 'finished', scores };
-    this.io.in(this.lobbyId).emit('game:finish', scores);
+    this.io.in(this.lobbyId).emit('game:finish', [...scores.entries()]);
   }
 
   public destroy() {

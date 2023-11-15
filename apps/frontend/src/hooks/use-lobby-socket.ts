@@ -28,7 +28,7 @@ export default function useLobbySocket() {
     }
 
     function onClientError(message: string) {
-      toast.error(message);
+      toast.error(`${message}.`);
     }
 
     function onDisconnect() {
@@ -72,5 +72,33 @@ export default function useLobbySocket() {
     return { error: undefined };
   }
 
-  return { connected, lobby, createLobby, joinLobby };
+  function leaveLobby() {
+    if (!connected) {
+      return { error: 'Not connected' };
+    }
+
+    socket.emit('lobby:leave');
+    setLobby({ lobbyId: null });
+
+    return { error: undefined };
+  }
+
+  function setDisplayName(displayName: string) {
+    if (!connected) {
+      return { error: 'Not connected' };
+    }
+
+    socket.emit('lobby:set-display-name', displayName);
+
+    return { error: undefined };
+  }
+
+  return {
+    connected,
+    lobby,
+    createLobby,
+    joinLobby,
+    leaveLobby,
+    setDisplayName,
+  };
 }

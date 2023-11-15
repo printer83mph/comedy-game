@@ -5,9 +5,9 @@ import dotenv from 'dotenv';
 import Fastify from 'fastify';
 import fastifySocketIO from 'fastify-socket.io';
 
+import registerGameHandler from './socket/game-handler';
 import registerLobbyHandler from './socket/lobby-handler';
 import { GameServer } from './types/server';
-import registerGameHandler from './socket/game-handler';
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });

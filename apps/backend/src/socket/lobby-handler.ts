@@ -22,6 +22,10 @@ export default function registerLobbyHandler(
   io: GameServer,
   socket: GameSocket,
 ) {
+  socket.on('lobby:set-display-name', (displayName) => {
+    socket.data.displayName = displayName.substring(0, 32);
+  });
+
   socket.on('lobby:create', async () => {
     console.log('creating lobby...');
 
@@ -84,6 +88,19 @@ export default function registerLobbyHandler(
     } catch (err) {
       socket.emit('client-error', (err as Error).message);
     }
+  });
+
+  socket.on('lobby:leave', () => {
+    if (!socket.data.lobbyId) {
+      console.error('Client not in a lobby');
+      socket.emit('client-error', 'Not in a lobby');
+      return;
+    }
+
+    const game = lobbies.get(socket.data.lobbyId);
+    game?.removePlayer(socket.id);
+    socket.leave(socket.data.lobbyId);
+    socket.data.lobbyId = undefined;
   });
 
   socket.on('disconnect', async () => {

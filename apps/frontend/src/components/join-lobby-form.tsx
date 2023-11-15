@@ -26,12 +26,12 @@ export default function JoinLobbyForm({
             setValueAs: (pin: string) => pin.toUpperCase(),
           })}
           placeholder="Enter Game Pin"
-          className="px-6 tabular-nums py-3 w-52 bg-white/80 placeholder:text-neutral-600 rounded-2xl uppercase placeholder:normal-case focus-visible:bg-white/95 transition-colors"
+          className="px-6 tabular-nums py-3 w-52 bg-white/80 placeholder:text-neutral-600 rounded-2xl uppercase placeholder:normal-case transition-colors"
         />
         {isValid && (
           <button
             type="submit"
-            className="absolute right-1 bg-white rounded-2xl w-10 h-10 top-1/2 -translate-y-1/2"
+            className="absolute right-1 bg-yellow-100 rounded-2xl w-10 h-10 top-1/2 -translate-y-1/2"
           >
             →
           </button>

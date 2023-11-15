@@ -4,8 +4,7 @@ import { NewGameState } from '../../../backend/src/types/server';
 
 import Timer from './timer';
 
-const TIME_PER_CAPTION = 5;
-const TIME_WINNER = 10;
+const TIME_PER_CAPTION = 3;
 
 export default function LookingStep({
   gameState,
@@ -18,8 +17,7 @@ export default function LookingStep({
 
   useEffect(() => {
     if (gameState.state !== 'looking') return;
-    const switchTime =
-      gameState.captions.length * TIME_PER_CAPTION + TIME_WINNER;
+    const switchTime = gameState.captions.length * TIME_PER_CAPTION;
 
     const timeout = setTimeout(() => {
       setPage('winner');
@@ -62,7 +60,7 @@ export default function LookingStep({
                     {playerName ?? '(Player left game)'}
                   </div>
                   <div
-                    className={`text-white/70 before:[content:'"'] after:[content:'"']`}
+                    className={`text-neutral-200 before:[content:'"'] after:[content:'"']`}
                   >
                     {caption}
                   </div>
@@ -77,22 +75,22 @@ export default function LookingStep({
           <div className="w-full lg:w-[650px]">
             <img
               src={gameState.imgUrl}
-              className="aspect-square w-full object-cover rounded-xl mt-4"
+              className="aspect-square w-full object-cover rounded-t-xl mt-4"
             />
-            <ul>
+            <ul className="bg-white rounded-b-2xl">
               {gameState.winners.map((winnerId) => {
                 const playerName = players.find(([id]) => id === winnerId)?.[1];
                 const caption = gameState.captions.find(
                   ([id]) => id === winnerId,
                 )?.[1];
                 return (
-                  <li className="text-white/70">
+                  <li className="text-black/70 px-6 py-3">
                     <span className={``}>
                       {playerName ?? '(Player left game)'}
                     </span>{' '}
                     –{' '}
                     <span
-                      className={`text-white before:[content:'"'] after:[content:'"']`}
+                      className={`text-black before:[content:'"'] after:[content:'"']`}
                     >
                       {caption}
                     </span>

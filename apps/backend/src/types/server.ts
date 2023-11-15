@@ -25,12 +25,14 @@ export interface ServerToClientEvents {
     ownerId: string,
   ) => void;
   'game:set-state': (newState: NewGameState) => void;
-  'game:finish': (scores: Map<string, number>) => void;
+  'game:finish': (scores: [string, number][]) => void;
 }
 
 export interface ClientToServerEvents {
+  'lobby:set-display-name': (displayName: string) => void;
   'lobby:create': () => void;
   'lobby:join': (lobbyId: string) => void;
+  'lobby:leave': () => void;
   'game:start': () => void;
   'game:submit-caption': (caption: string) => void;
   'game:submit-vote': (submissionPlayerId: string) => void;
