@@ -109,6 +109,9 @@ export default class Game {
       }
       // continuing
       this.gameState.roundIndex += 1;
+      this.gameState.imageUrl = `${
+        process.env.FRONTEND_URL
+      }/img/prompts/prompt_0${this.gameState.roundIndex + 1}.jpg`;
       this.gameState.submissions = new Map();
       this.gameState.step = 'writing';
     } else {
@@ -116,8 +119,7 @@ export default class Game {
       this.gameState = {
         phase: 'playing',
         step: 'writing',
-        // TODO: pick random image
-        imageUrl: 'https://placekitten.com/300/400',
+        imageUrl: `${process.env.FRONTEND_URL}/img/prompts/prompt_01.jpg`,
         roundIndex: 0,
         scores: new Map(),
         submissions: new Map(),
